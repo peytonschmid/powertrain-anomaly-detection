@@ -1,5 +1,5 @@
-from pt_ad.experiments import run_experiments
-from pt_ad.plots import plot_example_drives_by_cycle
+from powertrain_anomaly_detection.experiments import run_experiments
+from powertrain_anomaly_detection.plots import plot_example_drives_by_cycle
 
 if __name__ == "__main__":
     df_all, results_df = run_experiments()

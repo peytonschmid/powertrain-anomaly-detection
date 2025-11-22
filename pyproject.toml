@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "powertrain_anomaly_detection"
+version = "0.1.0"
+description = "Synthetic powertrain anomaly detection toolkit using Conv1D/TCN autoencoders."
+authors = [
+    {name = "Peyton Schmid"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+    "torch",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "tqdm",
+    "scikit-learn",
+    "pyarrow",
+    "requests",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["auto_ad*"]
