@@ -25,4 +25,4 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["auto_ad*"]
+include = ["powertrain_anomaly_detection*"]

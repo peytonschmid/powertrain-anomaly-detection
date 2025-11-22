@@ -1,6 +1,7 @@
 """
-auto_ad: Temporal Conv1D / TCN autoencoder framework
-for synthetic powertrain anomaly detection.
+powertrain_anomaly_detection: Temporal Conv1D / 
+TCN autoencoder framework for synthetic powertrain 
+anomaly detection.
 """
 
 from .config import CONFIG, numeric_cols, WINDOW_S, EPA_CYCLE_URLS
