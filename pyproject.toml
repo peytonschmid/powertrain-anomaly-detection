@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "powertrain_anomaly_detection"
 version = "0.1.0"
-description = "Synthetic powertrain anomaly detection toolkit using Conv1D/TCN autoencoders."
+description = "Conv1D / TCN autoencoder framework for synthetic powertrain anomaly detection."
 authors = [
     {name = "Peyton Schmid"}
 ]
@@ -23,6 +23,10 @@ dependencies = [
     "requests",
 ]
 
+[tool.setuptools]
+# critical for src/ layout
+package-dir = {"" = "src"}
+
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = ["powertrain_anomaly_detection*"]
