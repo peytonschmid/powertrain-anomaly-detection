@@ -76,6 +76,7 @@ def run_experiments():
           any(td["anomaly"].sum() > 0 for td in test_runs))
 
     all_results = []
+    all_models = {}
     start_time = time.time()
 
     for exp in EXPERIMENTS:
@@ -106,6 +107,8 @@ def run_experiments():
             per_mode_name=name,
             num_models=CONFIG["ENSEMBLE"]["num_models"],
         )
+
+        all_models[name] = models
 
         calib_idx = next(
             (i for i, td in enumerate(test_runs) if td["anomaly"].sum() > 0),
@@ -149,4 +152,4 @@ def run_experiments():
     print("Execution Time:", exec_time)
 
     results_df = pd.concat(all_results, ignore_index=True)
-    return df_all, results_df
+    return df_all, results_df, all_models
