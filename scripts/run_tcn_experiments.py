@@ -5,8 +5,7 @@ from powertrain_anomaly_detection.experiments import run_tcn_experiments
 from powertrain_anomaly_detection.plots import plot_example_drives_by_cycle
 
 if __name__ == "__main__":
-    df_all, results_df, all_models = run_tcn_experiments()
-    tcn_models = all_models.get("tcn_residual_per_mode", None)
+    df_all, results_df, tcn_models, qstar = run_tcn_experiments()
     if tcn_models is not None:
         ROOT = os.path.dirname(os.path.dirname(__file__))  # go up from scripts/
         ckpt_dir = os.path.join(ROOT, "checkpoints")

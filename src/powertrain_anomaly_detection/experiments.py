@@ -64,7 +64,6 @@ def evaluate_run_with_q(models, td: pd.DataFrame, q: float, per_mode: bool, labe
     ev.update({"AP": ap, "AUC": auc})
     return ev
 
-
 def run_experiments():
     print("Generating synthetic dataset...")
     df_all = generate_synthetic_dataset()
@@ -159,7 +158,6 @@ def run_tcn_experiments():
     train_runs, test_runs = build_runs_from_df(df_all)
 
     all_tcn_results = []
-    all_tcn_models = {}
     start_time = time.time()
 
     exp = {
@@ -182,8 +180,7 @@ def run_tcn_experiments():
     for df in train_runs:
         df_std = per_mode_standardize(df, numeric_cols, per_mode=per_mode)
         X, y, t0, md = make_windows(
-            df_std, numeric_cols,
-            WINDOW_S, CONFIG["STRIDE_SEC"], CONFIG["HZ"]
+            df_std, numeric_cols, WINDOW_S, CONFIG["STRIDE_SEC"], CONFIG["HZ"]
         )
         X_train_list.append(X)
     X_train = np.concatenate(X_train_list, axis=0)
@@ -195,8 +192,6 @@ def run_tcn_experiments():
         per_mode_name=name,
         num_models=CONFIG["ENSEMBLE"]["num_models"],
     )
-
-    all_tcn_models = models
 
     calib_idx = next(
         (i for i, td in enumerate(test_runs) if td["anomaly"].sum() > 0),
@@ -217,9 +212,7 @@ def run_tcn_experiments():
 
     rows = []
     for i, td in enumerate(test_runs):
-        r = evaluate_run_with_q(
-            models, td, q=q_star, per_mode=per_mode, label=name
-        )
+        r = evaluate_run_with_q(models, td, q=q_star, per_mode=per_mode, label=name)
         r["run"] = i
         r["exp"] = name
         rows.append(r)
@@ -240,5 +233,6 @@ def run_tcn_experiments():
     print("Execution Time:", exec_time)
 
     results_df = pd.concat(all_tcn_results, ignore_index=True)
-    return df_all, results_df, all_tcn_models
+    return df_all, results_df, models, q_star
+
 
