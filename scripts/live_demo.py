@@ -19,6 +19,7 @@ from powertrain_anomaly_detection.selector import (
     smooth_hysteresis,
     event_metrics,
     per_mode_quantiles,
+    windows_to_events
 )
 
 CHECKPOINT_PATH = "checkpoints/tcn_ae_4.pt"  
@@ -44,6 +45,66 @@ def build_tcn_model(in_dim: int) -> BaseConv1dAE:
         dropout=CONFIG["AE_ARCH"]["dropout"],
     )
 
+def summarize_injected_events(df_drive):
+    labels = df_drive["anomaly"].values
+    types = df_drive.get("anomaly_type", pd.Series(["none"] * len(df_drive))).values
+    times = df_drive["time_s"].values
+
+    events = []
+    in_ev = False
+    start = None
+
+    for i, lab in enumerate(labels):
+        if lab == 1 and not in_ev:
+            in_ev = True
+            start = i
+        elif lab == 0 and in_ev:
+            end = i - 1
+            t0, t1 = times[start], times[end]
+            maj_type = pd.Series(types[start:end+1]).mode().iloc[0]
+            events.append((t0, t1, maj_type))
+            in_ev = False
+
+    if in_ev:
+        end = len(labels) - 1
+        t0, t1 = times[start], times[end]
+        maj_type = pd.Series(types[start:end+1]).mode().iloc[0]
+        events.append((t0, t1, maj_type))
+
+    print("\n=== Injected anomaly events (ground truth) ===")
+    if not events:
+        print("No anomalies in this drive.")
+    for k, (t0, t1, tp) in enumerate(events, 1):
+        print(f"  GT event {k}: {tp:>22}  from t={t0:6.1f}s to t={t1:6.1f}s")
+
+    return events
+
+def summarize_predicted_events(flags, tt, window_s, gt_events):
+    pred_events = windows_to_events(flags)
+    print("\n=== Predicted anomaly events (window-level) ===")
+    if not pred_events:
+        print("No predicted events.")
+        return
+
+    for k, (ws, we) in enumerate(pred_events, 1):
+        # window start -> time; end window extends one window length
+        t_start = tt[ws]
+        t_end = tt[we] + window_s
+
+        # find overlapping GT events
+        matched = []
+        for (gt_start, gt_end, gt_type) in gt_events:
+            if not (t_end < gt_start or t_start > gt_end):  # overlap?
+                matched.append(gt_type)
+
+        if matched:
+            # majority type among overlapping GT events
+            maj = pd.Series(matched).mode().iloc[0]
+            status = f"TRUE POSITIVE (overlaps {maj})"
+        else:
+            status = "FALSE POSITIVE (no GT overlap)"
+
+        print(f"  Pred event {k}: t=[{t_start:6.1f}s, {t_end:6.1f}s]  → {status}")
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -153,6 +214,8 @@ def main():
 
     print("\nSaved plot to demo_outputs/demo_detection.png\n")
 
+    gt_events = summarize_injected_events(df_demo)
+    summarize_predicted_events(flags, t0, WINDOW_S, gt_events)
 
 if __name__ == "__main__":
     main()

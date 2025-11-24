@@ -174,11 +174,13 @@ def inject_anomalies_into_drive(df_drive: pd.DataFrame,
 
     # Ensure anomaly column exists and starts at 0
     df["anomaly"] = 0
+    df["anomaly_type"] = "none"
+    df["anomaly_id"] = -1
 
     # How many distinct anomaly segments in this drive?
     n_events = int(rng.integers(1, max_events + 1))
 
-    for _ in range(n_events):
+    for event_id in range(n_events):
         # Choose a random segment length between ~3–12 seconds (0.02s step)
         seg_len = int(rng.integers(150, 600))  # 150*0.02=3s to 600*0.02=12s
         if seg_len >= n:
@@ -291,6 +293,8 @@ def inject_anomalies_into_drive(df_drive: pd.DataFrame,
 
         # Mark anomaly labels
         df.loc[idx, "anomaly"] = 1
+        df.loc[idx, "anomaly_type"] = anomaly_type
+        df.loc[idx, "anomaly_id"] = event_id
 
     return df
 
@@ -335,6 +339,13 @@ def generate_synthetic_dataset(
         split = df_drive["split"].iloc[0]
 
         if split == "train_normal":
+            df_drive = df_drive.copy()
+            if "anomaly" not in df_drive:
+                df_drive["anomaly"] = 0
+            if "anomaly_type" not in df_drive:
+                df_drive["anomaly_type"] = "none"
+            if "anomaly_id" not in df_drive:
+                df_drive["anomaly_id"] = -1
             df_list.append(df_drive)
             continue
 
@@ -343,6 +354,13 @@ def generate_synthetic_dataset(
             df_anom["split"] = "test_anom"
             df_list.append(df_anom)
         else:
+            df_drive = df_drive.copy()
+            if "anomaly" not in df_drive:
+                df_drive["anomaly"] = 0
+            if "anomaly_type" not in df_drive:
+                df_drive["anomaly_type"] = "none"
+            if "anomaly_id" not in df_drive:
+                df_drive["anomaly_id"] = -1
             df_list.append(df_drive)
 
     return pd.concat(df_list, ignore_index=True)
