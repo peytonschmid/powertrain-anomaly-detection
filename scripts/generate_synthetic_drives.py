@@ -5,7 +5,7 @@ and optionally saves or plots examples.
 """
 
 from pathlib import Path
-from powertrain_anomaly_detection.config import CONFIG, numeric_cols
+from powertrain_anomaly_detection.config import CONFIG, numeric_cols, WINDOW_S
 from powertrain_anomaly_detection.data import generate_synthetic_dataset, build_runs_from_df
 from powertrain_anomaly_detection.preprocessing import per_mode_standardize, make_windows
 from powertrain_anomaly_detection.plots import plot_example_drives_by_cycle
@@ -50,7 +50,7 @@ def main(save_csv=False, plot_examples=False):
     X, y, t0, md = make_windows(
         df_std,
         numeric_cols,
-        CONFIG["WINDOW_S"],
+        WINDOW_S,
         CONFIG["STRIDE_SEC"],
         CONFIG["HZ"]
     )
