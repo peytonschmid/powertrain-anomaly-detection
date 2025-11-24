@@ -50,8 +50,7 @@ def main():
     print("Device:", device)
 
     print("\n=== Loading synthetic dataset ===")
-    df_train, df_test = generate_synthetic_dataset()
-    df_all = pd.concat([df_train, df_test], ignore_index=True)
+    df_all = generate_synthetic_dataset()
 
     drive_id, df_demo = pick_demo_drive(df_all)
     print(f"Using drive_id={drive_id}, split={df_demo['split'].iloc[0]}, "
