@@ -337,15 +337,17 @@ def generate_synthetic_dataset(
     df_list = []
     for drive_id, df_drive in df_all.groupby("drive_id"):
         split = df_drive["split"].iloc[0]
+        df_drive = df_drive.copy()
+
+        # ensure columns exist with defaults before any logic
+        if "anomaly" not in df_drive:
+            df_drive["anomaly"] = 0
+        if "anomaly_type" not in df_drive:
+            df_drive["anomaly_type"] = "none"
+        if "anomaly_id" not in df_drive:
+            df_drive["anomaly_id"] = -1
 
         if split == "train_normal":
-            df_drive = df_drive.copy()
-            if "anomaly" not in df_drive:
-                df_drive["anomaly"] = 0
-            if "anomaly_type" not in df_drive:
-                df_drive["anomaly_type"] = "none"
-            if "anomaly_id" not in df_drive:
-                df_drive["anomaly_id"] = -1
             df_list.append(df_drive)
             continue
 
@@ -354,13 +356,6 @@ def generate_synthetic_dataset(
             df_anom["split"] = "test_anom"
             df_list.append(df_anom)
         else:
-            df_drive = df_drive.copy()
-            if "anomaly" not in df_drive:
-                df_drive["anomaly"] = 0
-            if "anomaly_type" not in df_drive:
-                df_drive["anomaly_type"] = "none"
-            if "anomaly_id" not in df_drive:
-                df_drive["anomaly_id"] = -1
             df_list.append(df_drive)
 
     return pd.concat(df_list, ignore_index=True)
