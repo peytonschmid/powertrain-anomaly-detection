@@ -11,7 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import torch
 
-from powertrain_anomaly_detection.config import CONFIG
+from powertrain_anomaly_detection.config import CONFIG, numeric_cols, WINDOW_S
 from powertrain_anomaly_detection.data import generate_synthetic_dataset
 from powertrain_anomaly_detection.preprocessing import per_mode_standardize, make_windows
 from powertrain_anomaly_detection.models import BaseConv1dAE  # adapt if class name differs
@@ -57,7 +57,6 @@ def main():
           f"cycle={df_demo['cycle_name'].iloc[0]}")
 
     # ---------------- Load model ----------------
-    numeric_cols = CONFIG["NUMERIC_COLS"]  # if you stored this in config
     in_dim = len(numeric_cols)
 
     model = build_tcn_model(in_dim).to(device)
