@@ -117,11 +117,6 @@ def plot_example_drives_by_cycle(df_all, save_dir=None, show=True):
     TIME_COL   = "time_s"
     LABEL_COL  = "anomaly"
 
-    SIGNALS = [
-        ("EngineRPM",              "Engine Speed (rpm)"),
-        ("EngineTorque_Actual_Nm", "Engine Torque (Nm)"),
-    ]
-
     # Pick one drive per cycle
     example_ids = {}
     for cycle_name, g in df_all.groupby("cycle_name"):
@@ -144,7 +139,7 @@ def plot_example_drives_by_cycle(df_all, save_dir=None, show=True):
         df_drive = df_all[df_all["drive_id"] == drive_id].copy()
         time   = df_drive[TIME_COL].values
         labels = df_drive[LABEL_COL].values
-        n_rows = len(SIGNALS) + 1
+        n_rows = len(DEFAULT_SIGNALS) + 1
 
         fig = plt.figure(figsize=(14, 2.5 * n_rows))
         fig.suptitle(
@@ -154,7 +149,7 @@ def plot_example_drives_by_cycle(df_all, save_dir=None, show=True):
         )
 
         # plot signals...
-        for row_idx, (col, nice_name) in enumerate(SIGNALS, start=1):
+        for row_idx, (col, nice_name) in enumerate(DEFAULT_SIGNALS, start=1):
             sig = df_drive[col].values
             ax = plt.subplot(n_rows, 1, row_idx)
             ax.plot(time, sig, label=nice_name)
