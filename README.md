@@ -28,3 +28,15 @@ This notebook implements:
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Usage in CoLab
+
+Paste the following in a Colab cell to run the live demo:
+```python
+!rm -rf powertrain-anomaly-detection
+!git clone https://github.com/peytonschmid/powertrain-anomaly-detection.git
+%cd powertrain-anomaly-detection
+!pip install -e .
+!python scripts/live_demo.py
+```
