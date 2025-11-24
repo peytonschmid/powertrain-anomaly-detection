@@ -57,9 +57,11 @@ def main(save_csv=False, plot_examples=False):
 
     print(f"Windowed shape: {X.shape} (windows x time x features)")
 
+    # after df_all is created
     if plot_examples:
         print("\n=== Plotting Sample Drives by EPA Cycle ===")
-        plot_example_drives_by_cycle(df_all)
+        plot_example_drives_by_cycle(df_all, save_dir="figs", show=False)
+        print("Saved example plots to figs/")
 
     print("\nDone.\n")
     return df_all, train_runs, test_runs

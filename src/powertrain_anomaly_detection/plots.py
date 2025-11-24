@@ -108,20 +108,75 @@ def plot_drive_signals_with_anomalies(
     plt.show()
 
 
-def plot_example_drives_by_cycle(
-    df_all: pd.DataFrame,
-    signals: List[Tuple[str, str]] | None = None,
-):
-    """
-    Convenience function:
-    - pick one representative drive per cycle
-    - plot each drive with anomaly shading.
-    """
-    example_ids = pick_example_drives_by_cycle(df_all)
+# plots.py
+import os
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_example_drives_by_cycle(df_all, save_dir=None, show=True):
+    TIME_COL   = "time_s"
+    LABEL_COL  = "anomaly"
+
+    SIGNALS = [
+        ("EngineRPM",              "Engine Speed (rpm)"),
+        ("EngineTorque_Actual_Nm", "Engine Torque (Nm)"),
+    ]
+
+    # Pick one drive per cycle
+    example_ids = {}
+    for cycle_name, g in df_all.groupby("cycle_name"):
+        cand = g[g["split"] == "test_anom"]["drive_id"].unique()
+        if len(cand) == 0:
+            cand = g[g["split"] == "test_normal"]["drive_id"].unique()
+        if len(cand) == 0:
+            cand = g["drive_id"].unique()
+        if len(cand) > 0:
+            example_ids[cycle_name] = int(cand[0])
+
     print("Example drive_ids by cycle:")
     for c, d in example_ids.items():
         print(f"  {c}: drive_id={d}")
 
+    if save_dir is not None:
+        os.makedirs(save_dir, exist_ok=True)
+
     for cycle_name, drive_id in example_ids.items():
         df_drive = df_all[df_all["drive_id"] == drive_id].copy()
-        plot_drive_signals_with_anomalies(df_drive, signals=signals)
+        time   = df_drive[TIME_COL].values
+        labels = df_drive[LABEL_COL].values
+        n_rows = len(SIGNALS) + 1
+
+        fig = plt.figure(figsize=(14, 2.5 * n_rows))
+        fig.suptitle(
+            f"Cycle: {cycle_name} | drive_id={drive_id} | split={df_drive['split'].iloc[0]}",
+            fontsize=14,
+            y=0.99
+        )
+
+        # plot signals...
+        for row_idx, (col, nice_name) in enumerate(SIGNALS, start=1):
+            sig = df_drive[col].values
+            ax = plt.subplot(n_rows, 1, row_idx)
+            ax.plot(time, sig, label=nice_name)
+            ax.set_ylabel(nice_name)
+            ax.grid(True, alpha=0.3)
+
+        # anomaly row
+        ax = plt.subplot(n_rows, 1, n_rows)
+        ax.step(time, labels, where="post")
+        ax.set_ylim(-0.1, 1.2)
+        ax.set_ylabel("anomaly")
+        ax.set_xlabel("Time (s)")
+        ax.grid(True, alpha=0.3)
+
+        fig.tight_layout(rect=[0, 0, 1, 0.97])
+
+        if save_dir is not None:
+            out_path = os.path.join(save_dir, f"{cycle_name}_drive_{drive_id}.png")
+            fig.savefig(out_path, dpi=200, bbox_inches="tight")
+            print("Saved:", out_path)
+
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
