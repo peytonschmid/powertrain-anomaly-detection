@@ -347,7 +347,6 @@ def generate_synthetic_dataset(
 
     return pd.concat(df_list, ignore_index=True)
 
-
 def build_runs_from_df(df: pd.DataFrame) -> tuple[list[pd.DataFrame], list[pd.DataFrame]]:
     """Split df_all into per-drive training and test runs."""
     train_runs, test_runs = [], []

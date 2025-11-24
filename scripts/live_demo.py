@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import torch
 
 from powertrain_anomaly_detection.config import CONFIG
-from powertrain_anomaly_detection.data import load_synthetic_dataset
+from powertrain_anomaly_detection.data import generate_synthetic_dataset
 from powertrain_anomaly_detection.preprocessing import per_mode_standardize, make_windows
 from powertrain_anomaly_detection.models import BaseConv1dAE  # adapt if class name differs
 from powertrain_anomaly_detection.selector import (
@@ -52,7 +52,7 @@ def main():
     print("Device:", device)
 
     print("\n=== 🚗 Loading synthetic dataset ===")
-    df_train, df_test = load_synthetic_dataset(CONFIG)
+    df_train, df_test = generate_synthetic_dataset(CONFIG)
     df_all = pd.concat([df_train, df_test], ignore_index=True)
 
     drive_id, df_demo = pick_demo_drive(df_all)

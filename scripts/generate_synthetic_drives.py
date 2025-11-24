@@ -7,7 +7,7 @@ and optionally saves or plots examples.
 
 from pathlib import Path
 from powertrain_anomaly_detection.config import CONFIG
-from powertrain_anomaly_detection.data import load_synthetic_dataset
+from powertrain_anomaly_detection.data import generate_synthetic_dataset
 from powertrain_anomaly_detection.preprocessing import preprocess_dataset
 from powertrain_anomaly_detection.plots import plot_example_drives_by_cycle
 
@@ -19,7 +19,7 @@ def main(save_csv=False, plot_examples=False):
     print("\n=== Generating Synthetic Drives ===")
 
     # Load synthetic training/test drives BEFORE windowing
-    df_train, df_test = load_synthetic_dataset(CONFIG)
+    df_train, df_test = generate_synthetic_dataset(CONFIG)
 
     print(f"\nLoaded synthetic drives:")
     print(f"Train rows: {len(df_train):,}")
