@@ -24,7 +24,6 @@ from powertrain_anomaly_detection.selector import (
 CHECKPOINT_PATH = "checkpoints/tcn_ae_4.pt"  
 WINDOW_S = 6
 
-
 def pick_demo_drive(df_all):
     """Pick a single test drive with anomalies."""
     candidates = df_all[df_all["split"] == "test_anom"]["drive_id"].unique()
@@ -34,7 +33,6 @@ def pick_demo_drive(df_all):
     drive_id = int(candidates[0])
     df_drive = df_all[df_all["drive_id"] == drive_id].copy()
     return drive_id, df_drive
-
 
 def build_tcn_model(in_dim: int) -> BaseConv1dAE:
     return BaseConv1dAE(
@@ -51,8 +49,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Device:", device)
 
-    print("\n=== 🚗 Loading synthetic dataset ===")
-    df_train, df_test = generate_synthetic_dataset(CONFIG)
+    print("\n=== Loading synthetic dataset ===")
+    df_train, df_test = generate_synthetic_dataset()
     df_all = pd.concat([df_train, df_test], ignore_index=True)
 
     drive_id, df_demo = pick_demo_drive(df_all)

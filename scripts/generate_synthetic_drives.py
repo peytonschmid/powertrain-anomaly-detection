@@ -19,7 +19,7 @@ def main(save_csv=False, plot_examples=False):
     print("\n=== Generating Synthetic Drives ===")
 
     # Load synthetic training/test drives BEFORE windowing
-    df_train, df_test = generate_synthetic_dataset(CONFIG)
+    df_train, df_test = generate_synthetic_dataset()
 
     print(f"\nLoaded synthetic drives:")
     print(f"Train rows: {len(df_train):,}")
