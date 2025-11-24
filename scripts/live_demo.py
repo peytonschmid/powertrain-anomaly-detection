@@ -21,7 +21,7 @@ from powertrain_anomaly_detection.selector import (
     per_mode_quantiles,
 )
 
-CHECKPOINT_PATH = "checkpoints/tcn_ae_demo.pt"  # pre-saved before demo
+CHECKPOINT_PATH = "checkpoints/tcn_ae_4.pt"  
 WINDOW_S = 6
 
 
